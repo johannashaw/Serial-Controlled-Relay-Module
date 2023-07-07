@@ -1,73 +1,220 @@
 /*  Author: Johanna Shaw
     Created: July 1, 2023
     Description: Takes input from SCI and uses it to turn on the specified relay 
+          FUCK IT! we're going back to doing this without classes because apparently 
+          arduinos like slashing kneecaps for the fun of it and won't let me procedurally fill an object array.
 */
 
-// the array that will hold all of the pin objects
-byte pinOut[8];
-// array holding count for relays
-unsigned long relays[8];
+#include <EEPROM.h>
+
+// **********************************************************************************************
+// Function Declarations   **********************************************************************
+// **********************************************************************************************
+void Relay(int index, byte pin);
+void ResetDefaults();
+bool checkString(int index, String input);
+void checkCount(int index);
+void Print(int index);
+void RelayCheck(); 
+void serialEvent();
+void Read(int index);
+void ReadAll();
+// void Write(int index);
+void WriteDelay(int index);
+void WriteName(int index);
+void ChangeName(int index, String newName);
+
+
+
+// **********************************************************************************************
+// Global Variables   ***************************************************************************
+// **********************************************************************************************
+
+//things that can be different for each relay
+unsigned char OnTime[8];
+unsigned long Count[8];
+byte Pin[8]; 
+char Name[8][16];
+
 // the baud rate of the SCI port
 unsigned int BAUD = 9600;
 
-// the relay input prefix,
-char relayprefix[] = "R";
-
 
 void setup() {
-  // put your setup code here, to run once:
 
-  // initialize the pins, set to low, store in the pinOut array
+  // ResetDefaults();
+  
+    // initialize the pins, set to low, store in the pinOut array
   for (int i = 0; i < 8; i++)
   {
-    // store the board pin number into array at the spot corresponding to it's connected relay (if numbering from 0)
-    pinOut[i] = i + 4;
-
-    // set the pin as an output
-    pinMode(pinOut[i], OUTPUT);
-
-    // set pin to low
-    digitalWrite(pinOut[i], HIGH);
+    // Relay(i, i + 4, 35, String("R" + String(i + 1)));
+    Read(i);
+    Relay(i, i + 4);    
   }
-
+  
   // initialize the serial port with established BAUD
   Serial.begin(BAUD);
 
 
+  // // initialize the pins, set to low, store in the pinOut array
+  // for (int i = 0; i < 8; i++)
+  // {
+  //   Print(i);
+  // }
+
+  // OnTime[0] = 69;
+  // Name[0][0] = 33;
+  // Print(0);
+
+  // String temp = "hello";
+  // Serial.println(temp.substring(0, 3));
 }
 
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  delay(100);
 
-
+  RelayCheck();
 
 }
 
+
+
+
+// **********************************************************************************************
+// Function Definitions   ***********************************************************************
+// **********************************************************************************************
+
+
+// Initializes all values pretaining to the given relay 
+void Relay(int index, byte pin){
+  // Save the pin for each relay
+  Pin[index] = pin;
+  
+  // set the pin as an output
+  pinMode(Pin[index], OUTPUT);
+
+  // set pin to low
+  digitalWrite(Pin[index], HIGH);
+}
+
+// Resets the Relay DelayTime and Names to their default values, stores them to EEPROM
+void ResetDefaults(){
+  // iterate through the relays
+  for (int index = 0; index < 8; index++)
+  {
+    // reset the delay to default
+    OnTime[index] = 35;
+
+    // reset relay name to default
+    ChangeName(index, String("R" + String(index + 1)));
+    // String newName = String("R" + String(index + 1));  
+    // int temp = 0;
+    // while (newName[temp] != 0 || temp == 15)
+    // {
+    //   Name[index][temp++] = newName[temp];
+    // }
+    // Name[index][temp] = 0;
+
+    // Store the default values back to storage
+    Write(index);
+  }
+}
+
+void ChangeName(int index, String newName)
+{
+  int temp = 0;
+  while (newName[temp] != 0 || temp == 15)
+  {
+    Name[index][temp++] = newName[temp];
+  }
+  Name[index][temp] = 0;
+}
+
+void checkCount(int index){
+  // if any >0, decrement 
+  if ( Count[index] > 0)
+    Count[index]--;
+  // else set pin back to high (aka turn off relay)
+  else
+  {
+    digitalWrite(Pin[index], HIGH);
+      
+  }
+}
+
+void Print(int index){
+  // Serial.print("\n");OnTime
+  Serial.print(String(OnTime[index]) + ",");
+  Serial.println(Name[index]);
+  // Serial.print("\n");
+
+}
 
 // goes through the relays array and checks if any of the relays need to be turned off
 void RelayCheck()
 {
-
-  // 
+  // iterate through the relay array 
+  for (int i = 0; i < 8; i++)
+  {
+    checkCount(i);
+  }
 }
 
-int index = 0, lastend = 0;
 
-// this is called at the end of every SCI input event 
+
+bool checkString(int index, String input)
+{
+  // Serial.print(String(String(Name[index]) + "+\n"));
+  if (input == String(String(Name[index]) + "+"))
+  {
+    // Serial.print("I'm in.\n");
+    Count[index] += OnTime[index];
+    digitalWrite(Pin[index], LOW);
+  }
+  else if (input == String(String(Name[index]) + "_off"))
+  // check if relay should be turned off
+  {
+    // reset the respective relay count and set pin to low
+    Count[index] = 0;
+    digitalWrite(Pin[index], HIGH);
+  }
+  // change name of a relay
+  else if (input.substring(0, 3) == String("cn" + String(index)))
+  {
+    //
+    Serial.println(input.substring(3));
+    ChangeName(index, input.substring(3));
+    Print(index);
+  }
+  // change the delay time of a relay
+  else if (input.substring(0, 3) == String("cd" + String(index)))
+  {
+    Serial.println(input.substring(3));
+    // I'm just going to make it so that the first 32 numbers are invalid for this
+    if (input[3] >= 32)
+    {
+      OnTime[index] = input[3] - 32;
+    }
+    Print(index);
+  }
+  else
+    return false;
+    
+  return true;
+}
+
+
+
+// this is called at the end of every SCI input event
 void serialEvent() {
-  
+  static int index = 0, lastend = 0; 
+  // array storing the received characters
   static char input[20];
-  char char_in;
+
   // save the received input
-  char_in = Serial.read();
-
-
-  Serial.print(char_in);
-  Serial.print("\t");
-
-  Serial.print(char_in, DEC);
-  Serial.print("\n");
+  char char_in = Serial.read();
+  
 
   // if char received is null, nl line feed, or carriage return
   if (char_in == 0 || char_in == 10 || char_in == 13)
@@ -75,10 +222,8 @@ void serialEvent() {
     // if we've already delt with received data, exit function
     if (lastend != index)
       return;
-
-    Serial.write("end\n");
     input[lastend] = 0;
-    Serial.write(input);
+    Serial.println(input);
     index = 0;
   }
   // if any other char was received
@@ -88,18 +233,78 @@ void serialEvent() {
     lastend = ++index;
     return;
   }
+  
     
-
+  String inp_str = String(input);
   // check input for if adding to relay on time or if relay needs to be turned off
   for (int i = 0; i < 8; i++)
   {
-    // check if you need to increment relay time
-    if (input[i] == relayprefix + String(i+1) + "+")
-      digitalWrite(pinOut[i], LOW);
+    
+    if (checkString(i, inp_str));
+      break;
       
-    // check if relay should be turned off
-  }
 
+  }
+}
+
+// Retreives the delay time and the relay name from EEPROM and saves them as variables.
+void Read(int index) {
+    // get the address for the index
+  // int addr = 0;
+  int i;
+  int addr = (index + 8) << 4;
+
+  // Write the delay value to EEPROM
+  OnTime[index] = (unsigned char)EEPROM.read(addr++);
+
+  // loop through the Name array
+  for (i = 0; i < 15; i++)
+  {
+    // Write the delay value to EEPROM
+    Name[index][i] = (char)EEPROM.read(addr++);
+    if (Name[index][i] == 0)
+      break;
+  }
+  // make sure the string is null terminated
+  Name[index][i] = 0;
+
+}
+
+
+// void Write(int index){
+//   // get the address for the index
+//   // int addr = 0;
+//   int addr = (index + 8) << 4;
+//   Serial.print("Write addr: " + String(addr) + "\n");
+
+//   // Store the delay value
+//   WriteDelay(int index);
+
+//   // Store the Name
+//   WriteName(int index);
+// }
+
+void WriteDelay(int index){
+  // get the address for the index
+  // int addr = 0;
+  int addr = (index + 8) << 4;
+  Serial.print("Write addr: " + String(addr) + "\n");
+
+  // Write the delay value to EEPROM
+  EEPROM.write(addr++, OnTime[index]);
+}
+
+void WriteName(int index){
+  // get the address for the index
+  // int addr = 0;
+  int addr = ((index + 8) << 4) + 1;
+
+  // loop through the Name array
+  for (int i = 0; i < 15; i++)
+  {
+    // Write the delay value to EEPROM
+    EEPROM.write(addr++, Name[index][i]);
+  }
 }
 
 
