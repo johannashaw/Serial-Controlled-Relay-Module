@@ -20,8 +20,8 @@ void serialEvent();
 void Read(int index);
 void ReadAll();
 // void Write(int index);
-void WriteDelay(int index);
-void WriteName(int index);
+void StoreDelay(int index);
+void StoreName(int index);
 void ChangeName(int index, String newName);
 
 
@@ -108,16 +108,11 @@ void ResetDefaults(){
 
     // reset relay name to default
     ChangeName(index, String("R" + String(index + 1)));
-    // String newName = String("R" + String(index + 1));  
-    // int temp = 0;
-    // while (newName[temp] != 0 || temp == 15)
-    // {
-    //   Name[index][temp++] = newName[temp];
-    // }
-    // Name[index][temp] = 0;
 
     // Store the default values back to storage
-    Write(index);
+    // Write(index);
+    StoreDelay(index);
+    StoreName(index);
   }
 }
 
@@ -145,9 +140,8 @@ void checkCount(int index){
 
 void Print(int index){
   // Serial.print("\n");OnTime
-  Serial.print(String(OnTime[index]) + ",");
+  Serial.print(String(index) + "," + String(OnTime[index]) + ",");
   Serial.println(Name[index]);
-  // Serial.print("\n");
 
 }
 
@@ -165,10 +159,10 @@ void RelayCheck()
 
 bool checkString(int index, String input)
 {
+
   // Serial.print(String(String(Name[index]) + "+\n"));
   if (input == String(String(Name[index]) + "+"))
   {
-    // Serial.print("I'm in.\n");
     Count[index] += OnTime[index];
     digitalWrite(Pin[index], LOW);
   }
@@ -179,12 +173,18 @@ bool checkString(int index, String input)
     Count[index] = 0;
     digitalWrite(Pin[index], HIGH);
   }
+
+  // this is a check to ensure that the string is a proper length for the next two cases
+  else if (input.length() < 4)
+    return false;
+
   // change name of a relay
   else if (input.substring(0, 3) == String("cn" + String(index)))
   {
     //
-    Serial.println(input.substring(3));
+    // Serial.println(input.substring(3));
     ChangeName(index, input.substring(3));
+    StoreName(index);
     Print(index);
   }
   // change the delay time of a relay
@@ -192,9 +192,11 @@ bool checkString(int index, String input)
   {
     Serial.println(input.substring(3));
     // I'm just going to make it so that the first 32 numbers are invalid for this
+    // since characters 0, 10, and 13 were used to indicate end of input
     if (input[3] >= 32)
     {
       OnTime[index] = input[3] - 32;
+      StoreDelay(index);
     }
     Print(index);
   }
@@ -215,6 +217,7 @@ void serialEvent() {
   // save the received input
   char char_in = Serial.read();
   
+  
 
   // if char received is null, nl line feed, or carriage return
   if (char_in == 0 || char_in == 10 || char_in == 13)
@@ -225,6 +228,18 @@ void serialEvent() {
     input[lastend] = 0;
     Serial.println(input);
     index = 0;
+  }
+  // Device control 1: print all of the relays
+  else if (char_in == 17){
+    // Serial.println(char_in, DEC);
+    for (int i = 0; i < 8; i++){
+      Print(i);
+    }
+  }
+  // Device control 2: reset all the relays to their defaults
+  else if (char_in == 18){
+    // Serial.println(char_in, DEC);
+    ResetDefaults();
   }
   // if any other char was received
   else { 
@@ -240,10 +255,7 @@ void serialEvent() {
   for (int i = 0; i < 8; i++)
   {
     
-    if (checkString(i, inp_str));
-      break;
-      
-
+    checkString(i, inp_str);
   }
 }
 
@@ -271,20 +283,16 @@ void Read(int index) {
 }
 
 
-// void Write(int index){
-//   // get the address for the index
-//   // int addr = 0;
-//   int addr = (index + 8) << 4;
-//   Serial.print("Write addr: " + String(addr) + "\n");
+void Write(int index){
 
-//   // Store the delay value
-//   WriteDelay(int index);
+  // Store the delay value
+  StoreDelay(index);
 
-//   // Store the Name
-//   WriteName(int index);
-// }
+  // Store the Name
+  StoreName(index);
+}
 
-void WriteDelay(int index){
+void StoreDelay(int index){
   // get the address for the index
   // int addr = 0;
   int addr = (index + 8) << 4;
@@ -294,7 +302,7 @@ void WriteDelay(int index){
   EEPROM.write(addr++, OnTime[index]);
 }
 
-void WriteName(int index){
+void StoreName(int index){
   // get the address for the index
   // int addr = 0;
   int addr = ((index + 8) << 4) + 1;
