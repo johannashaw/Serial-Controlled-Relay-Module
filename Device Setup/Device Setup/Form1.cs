@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace Device_Setup
 {
@@ -18,6 +19,9 @@ namespace Device_Setup
         static SerialPort _serialPort = new SerialPort();
         Queue<string> ReceivedStrings = new Queue<string>();
         Thread th_CheckRec = null;
+
+        //BindingSource bs_Relays = null;
+        BindingList<Relay> ls_Relays = new BindingList<Relay>(); 
         
 
 
@@ -30,6 +34,14 @@ namespace Device_Setup
             {
                 dd_Ports.Items.Add(port);
             }
+
+
+            //bs_Relays = new BindingSource();
+            //bs_Relays = new BindingSource(ls_Relays, null);
+
+            //DGV_Relays.AutoGenerateColumns = true;
+
+            //DGV_Relays.DataSource = ls_Relays;
 
             // bind event callbacks
             _serialPort.DataReceived += _serialPort_DataReceived;
@@ -93,7 +105,7 @@ namespace Device_Setup
             Invoke(new Action(() => 
             { 
                 ReceivedStrings.Enqueue(indata);
-                tb_in.Text += indata; 
+                //tb_in.Text += indata; 
             }));
             
         }
@@ -120,13 +132,80 @@ namespace Device_Setup
                 while (ReceivedStrings.Count != 0)
                     working += ReceivedStrings.Dequeue();
 
+                int Start = 0;
+                for (int i = 0; i < working.Length; i++)
+                {
+                    // you have a complete line
+                    if (working[i] == '\n')
+                    {
+                        // split the line by commas
+                        string line = working.Substring(Start, i - Start + 1);
+                        string[] vals = line.Split(',');
+
+                        Invoke(new Action(() =>
+                        {
+                            if (vals.Length == 3)
+                            {
+                                AddLine(vals);
+                            }
+                            
+                            tb_in.Text += line;
+                        }));
+
+                        Start = i + 1;
+                    } 
+                }
+                if (Start != working.Length)
+                    working = working.Substring(Start);
+                else
+                    working = "";
 
             }
         }
 
-        private void AddLine(string line)
+        private void AddLine(string[] line)
         {
-            DGV_Relays.Rows.
+            Relay row = null;
+
+            try
+            {
+                row = new Relay(line);
+            }
+            catch (Exception e)
+            {
+                SerialError(e.Message);
+                return;
+            }
+
+
+
+
+            // check to see if there's already data for the relay
+            // delete the data if yes
+
+
+            if (ls_Relays.Contains(row))
+            {
+                ls_Relays.Remove(row);
+                DGV_Relays.Rows.RemoveAt(row.Number);
+            }
+
+            ls_Relays.Add(row);
+            DGV_Relays.Rows.Add(row.Number+1, row.Name, row.Delay/10.0);
+
+
+
+            // insert the row
+
+            // bind and sort (unclear if it needs to be done each time
+            DGV_Relays.Sort(col_Relay, ListSortDirection.Ascending);
+
+
+
+
+
+
+            tb_in.Text += row.ToString() + "\n";
         }
 
         private void butt_Send_Click(object sender, EventArgs e)
@@ -210,5 +289,36 @@ namespace Device_Setup
 
         }
 
+        private void cb_NerdStuff_CheckedChanged(object sender, EventArgs e)
+        {
+            gb_NerdStuff.Enabled = gb_NerdStuff.Visible = cb_NerdStuff.Checked;
+        }
+
+        private void butt_edit_Click(object sender, EventArgs e)
+        {
+            if (DGV_Relays.SelectedRows.Count == 0)
+            {
+                SerialError("Select a row to edit");
+                return;
+            }
+            //DGV_Relays.
+        }
+
+        private void DGV_Relays_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+
+        }
+
+        private void butt_add_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void butt_off_Click(object sender, EventArgs e)
+        {
+
+        }
     }
+
+
 }
