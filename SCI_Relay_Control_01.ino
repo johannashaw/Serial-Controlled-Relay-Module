@@ -36,8 +36,11 @@ unsigned long Count[8];
 byte Pin[8]; 
 char Name[8][16];
 
+int checkrate = 50;
+
 // the baud rate of the SCI port
 unsigned int BAUD = 9600;
+
 
 
 void setup() {
@@ -54,25 +57,12 @@ void setup() {
   
   // initialize the serial port with established BAUD
   Serial.begin(BAUD);
-
-
-  // // initialize the pins, set to low, store in the pinOut array
-  // for (int i = 0; i < 8; i++)
-  // {
-  //   Print(i);
-  // }
-
-  // OnTime[0] = 69;
-  // Name[0][0] = 33;
-  // Print(0);
-
-  // String temp = "hello";
-  // Serial.println(temp.substring(0, 3));
 }
 
 
 void loop() {
-  delay(100);
+
+  delay(checkrate);
 
   RelayCheck();
 
@@ -146,6 +136,13 @@ void Print(int index){
 
 }
 
+void PrintAll()
+{
+  for (int i = 0; i < 8; i++)
+  {
+    Print(i);
+  }
+}
 // goes through the relays array and checks if any of the relays need to be turned off
 void RelayCheck()
 {
@@ -157,14 +154,13 @@ void RelayCheck()
 }
 
 
-
 bool checkString(int index, String input)
 {
 
   // Serial.print(String(String(Name[index]) + "+\n"));
   if (input == String(String(Name[index]) + "+"))
   {
-    Count[index] += OnTime[index];
+    Count[index] += OnTime[index] * 100 / checkrate;
     digitalWrite(Pin[index], LOW);
   }
   else if (input == String(String(Name[index]) + "_off"))
@@ -223,7 +219,7 @@ void serialEvent() {
   // save the received input
   char char_in = Serial.read();
   
-  
+  //Serial.println(String(char_in, DEC));
 
   // if char received is null, nl line feed, or carriage return
   if (char_in == 0 || char_in == 10 || char_in == 13)
@@ -236,16 +232,16 @@ void serialEvent() {
     index = 0;
   }
   // Device control 1: print all of the relays
-  else if (char_in == 17){
-    // Serial.println(char_in, DEC);
-    for (int i = 0; i < 8; i++){
-      Print(i);
-    }
+  else if (char_in == 17){    
+    PrintAll();
+    return;
   }
   // Device control 2: reset all the relays to their defaults
   else if (char_in == 18){
     // Serial.println(char_in, DEC);
     ResetDefaults();
+    PrintAll();
+    return;
   }
   // if any other char was received
   else { 
@@ -257,6 +253,18 @@ void serialEvent() {
   
     
   String inp_str = String(input);
+
+  // check for the end cache case (ie stop all relays)
+  if (inp_str == "NO.")
+  {
+    // iterate through Count
+    for (int i = 0; i < 8; i++)
+    {
+      Count[i] = 0;
+    }
+    return;
+  }
+
   // check input for if adding to relay on time or if relay needs to be turned off
   for (int i = 0; i < 8; i++)
   {
@@ -320,12 +328,3 @@ void StoreName(int index){
     EEPROM.write(addr++, Name[index][i]);
   }
 }
-
-
-
-
-
-
-
-
-
