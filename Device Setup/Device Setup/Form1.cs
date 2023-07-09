@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.IO.Ports;
 using System.Threading;
 using System.Xml.Linq;
+using System.Reflection;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Device_Setup
 {
@@ -19,9 +21,10 @@ namespace Device_Setup
         static SerialPort _serialPort = new SerialPort();
         Queue<string> ReceivedStrings = new Queue<string>();
         Thread th_CheckRec = null;
+        int editIndex = -1;
 
         //BindingSource bs_Relays = null;
-        BindingList<Relay> ls_Relays = new BindingList<Relay>(); 
+        List<Relay> ls_Relays = new List<Relay>(); 
         
 
 
@@ -45,6 +48,12 @@ namespace Device_Setup
 
             // bind event callbacks
             _serialPort.DataReceived += _serialPort_DataReceived;
+            trb_delay.ValueChanged += Trb_delay_ValueChanged;
+        }
+
+        private void Trb_delay_ValueChanged(object sender, EventArgs e)
+        {
+            txb_delay.Text = $"{trb_delay.Value/10.0}";
         }
 
 
@@ -62,7 +71,7 @@ namespace Device_Setup
                 _serialPort.PortName = dd_Ports.SelectedItem.ToString();
                 _serialPort.Open();
                 UI_Enable();
-
+                lb_ErrorOut.Text = "";
             }
             catch (Exception ex)
             {
@@ -105,7 +114,6 @@ namespace Device_Setup
             Invoke(new Action(() => 
             { 
                 ReceivedStrings.Enqueue(indata);
-                //tb_in.Text += indata; 
             }));
             
         }
@@ -132,6 +140,7 @@ namespace Device_Setup
                 while (ReceivedStrings.Count != 0)
                     working += ReceivedStrings.Dequeue();
 
+                // check each line 
                 int Start = 0;
                 for (int i = 0; i < working.Length; i++)
                 {
@@ -148,8 +157,7 @@ namespace Device_Setup
                             {
                                 AddLine(vals);
                             }
-                            
-                            tb_in.Text += line;
+                            lb_in.Items.Add(line);
                         }));
 
                         Start = i + 1;
@@ -173,7 +181,7 @@ namespace Device_Setup
             }
             catch (Exception e)
             {
-                SerialError(e.Message);
+                SerialError("Received bad data " + e.Message);
                 return;
             }
 
@@ -183,57 +191,88 @@ namespace Device_Setup
             // check to see if there's already data for the relay
             // delete the data if yes
 
-
             if (ls_Relays.Contains(row))
             {
                 ls_Relays.Remove(row);
                 DGV_Relays.Rows.RemoveAt(row.Number);
             }
 
+            // insert the row
             ls_Relays.Add(row);
             DGV_Relays.Rows.Add(row.Number+1, row.Name, row.Delay/10.0);
 
-
-
-            // insert the row
-
-            // bind and sort (unclear if it needs to be done each time
+            // bind and sort
             DGV_Relays.Sort(col_Relay, ListSortDirection.Ascending);
+            ls_Relays.Sort();
 
-
-
-
-
-
-            tb_in.Text += row.ToString() + "\n";
+            //tb_in.Text += row.ToString() + "\n";
         }
 
         private void butt_Send_Click(object sender, EventArgs e)
         {
-            _serialPort.WriteLine(tb_test.Text);
-            tb_out.Text += tb_test.Text + "\n";
+            SendString(tb_test.Text);
+        }
+
+        /// <summary>
+        /// Sends the given string to the device over the established serial port
+        /// </summary>
+        /// <param name="msg">The string to be sent</param>
+        /// <param name="error">The error message to be displayed in the error label</param>
+        /// <returns>true if successful, false if error</returns>
+        private bool SendString(string msg, string error)
+        {
+
+            try
+            {
+                _serialPort.WriteLine(msg);
+            }
+            catch
+            {
+                SerialError(error);
+                return false;
+            }
+            lb_out.Items.Add(msg);
+            return true;
+
+        }
+        /// <summary>
+        /// Sends the given string to the device over the established serial port
+        /// </summary>
+        /// <param name="msg">The string to be sent</param>
+        /// <returns>true if successful, false if error</returns>
+        private bool SendString(string msg)
+        {
+            try
+            {
+                _serialPort.WriteLine(msg);
+            }
+            catch (Exception e)
+            {
+                SerialError(e.Message);
+                return false;
+            }
+            lb_out.Items.Add(msg);
+            return true;
         }
 
         private void SendCharButton_Click(object sender, EventArgs e)
         {
             //
-            if (!(sender is Button))
+            if (!(sender is System.Windows.Forms.Button))
                 return;
 
 
             // Refresh sends device control 1 char
-            if (sender as Button == butt_Refresh)
+            if (sender as System.Windows.Forms.Button == butt_Refresh)
                 SendChar(17);
             // Reset sends device control 2 char
-            else if (sender as Button == butt_Reset)
+            else if (sender as System.Windows.Forms.Button == butt_Reset)
             {
                 if (MessageBox.Show("Reset all the relay names and delays to the default?", 
                     "Names be reset to 'R[x]' and delays will be reset to 3.5 sconds", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
                     return;
                 SendChar(18);
             }
-
-
         }
 
         /// <summary>
@@ -248,12 +287,11 @@ namespace Device_Setup
             try
             {
                 _serialPort.Write(buff, 0, 1);
-
             }
             catch (Exception ex)
             {
                 // put an error message here too
-                SerialError($"Refresh code failed to send byte '{val}': \n\t" + ex.Message);
+                SerialError($"Failed to send byte '{val}': \n\t" + ex.Message);
             }
         }
         private void SendChar(char val)
@@ -263,22 +301,41 @@ namespace Device_Setup
 
 
 
+        // *****************************************************************************
+        // **************************        UI Changes       **************************
+        // *****************************************************************************
+
+        /// <summary>
+        /// Changes the Error label text to the specified msg string.
+        /// </summary>
+        /// <param name="msg"></param>
         private void SerialError(string msg)
         {
+            // change colour to redish
+            lb_ErrorOut.ForeColor = Color.Maroon;
             // convay error message here
             lb_ErrorOut.Text = msg;
         }
 
-        // *****************************************************************************
-        // **************************        UI Changes       **************************
-        // *****************************************************************************
+
+        /// <summary>
+        /// Changes the Error label text to the specified msg string.
+        /// </summary>
+        /// <param name="msg"></param>
+        private void DisplayMessage(string msg)
+        {
+            // change colour to form default
+            lb_ErrorOut.ForeColor = ForeColor;
+            // convay error message here
+            lb_ErrorOut.Text = msg;
+        }
 
         /// <summary>
         /// Disables the Relay changing UI
         /// </summary>
         private void UI_Disable()
         {
-
+            gb_MainUI.Enabled = gb_Edit.Enabled = gb_NerdStuff.Enabled = false;
         }
 
         /// <summary>
@@ -286,6 +343,21 @@ namespace Device_Setup
         /// </summary>
         private void UI_Enable()
         {
+            gb_MainUI.Enabled = true;
+        }
+
+        /// <summary>
+        /// Resets the Editing group box and its contents to the empty default
+        /// </summary>
+        private void ClearEditUI()
+        {
+            editIndex = -1;
+            gb_Edit.Enabled = false;
+            gb_Edit.Text = $"Edit";
+
+            // clear the labels and text boxes
+            lb_EditError.Text = txb_delay.Text = tb_Name.Text = "";
+            trb_delay.Value = 0;
 
         }
 
@@ -301,22 +373,147 @@ namespace Device_Setup
                 SerialError("Select a row to edit");
                 return;
             }
-            //DGV_Relays.
+            //else
+            //    SerialError("");
+
+            // get the selected relay
+
+            Relay relay;
+            try
+            {
+                editIndex = (int)DGV_Relays.SelectedRows[0].Cells[0].Value - 1;
+
+                relay = ls_Relays[editIndex]; //(int)DGV_Relays.SelectedRows[0].Cells[0].Value;
+                                                //int editIndex = DGV_Relays.Rows.IndexOf(DGV_Relays.SelectedRows[0]);
+            }
+            catch(Exception ex)
+            {
+                SerialError($"Value error in edit Click event: " + ex.Message);
+                return;
+            }
+
+            //SerialError($"the editIndex is {editIndex}");
+
+            gb_Edit.Enabled = true;
+            gb_Edit.Text = $"Edit Relay {relay.Number + 1}";
+
+            // fill the edit-name textbox with the selected relay name
+            tb_Name.Text = relay.Name;
+            trb_delay.Value = relay.Delay;
+            Trb_delay_ValueChanged(sender, e);
         }
 
+
+        private void butt_Save_Click(object sender, EventArgs e)
+        {
+            string name = tb_Name.Text.Trim();
+            if (name.Length > 15)
+            {
+                lb_EditError.Text = "Relay Name needs to be less than 15 characters long";
+                return;
+            }
+
+            Relay relay = ls_Relays[editIndex];
+
+            // if the name is different, send it to the device
+            if (name != relay.Name &&  name != "")
+            {
+                // name can't contain commas
+                if (name.Contains(","))
+                {
+                    lb_EditError.Text = "Relay name can't contain commas.";
+                    return;
+                }
+                // name can't be the same as another name
+                if (ls_Relays.Exists(r => r.Name == name))
+                {
+                    lb_EditError.Text = "Each relay needs to have a unique name.";
+                    return;
+                }
+                string error = "Name change failed";
+                if (!SendString($"cn{editIndex}{name}", error))
+                {
+                    lb_EditError.Text = error;
+                    return;
+                }
+
+            }
+
+            //if the delay is different, send it to the device
+
+            // if the name is different, send it to the device
+            if (trb_delay.Value != relay.Delay)
+            {
+
+                string error = "Delay change failed";
+                char delay = (char)(trb_delay.Value + 32);
+                if (!SendString($"cd{editIndex}{trb_delay.Value:D3}", error))
+                {
+                    lb_EditError.Text = error;
+                    return;
+                }
+            }
+
+            // give saved message
+            DisplayMessage($"Relay {relay.Number+1} Change Saved!");
+            // clear edit UI
+            ClearEditUI();
+        }
+
+        private void butt_cancel_Click(object sender, EventArgs e)
+        {
+            // 
+            DisplayMessage("Edit Cancelled");
+            ClearEditUI();
+        }
+
+
+
+        /// <summary>
+        /// This should copy the cell contents to the clipboard
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DGV_Relays_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
 
         }
 
+
+
+        /// <summary>
+        /// Sends the relay add command to the device
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void butt_add_Click(object sender, EventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// Sends the relay stop/clear cache command to the device
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void butt_off_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void txb_delay_TextChanged(object sender, EventArgs e)
+        {
+            // the number is valid
+            if (float.TryParse(txb_delay.Text, out float delay) && delay >=0)
+            {
+                int del = (int)(delay * 10 + 0.01);
+                if (del >= 0 && del  <= 255)
+                {
+                    trb_delay.Value = del;
+                    return;
+                }
+            }
+            txb_delay.Text = $"{trb_delay.Value / 10.0}";
         }
     }
 
