@@ -119,9 +119,10 @@ void ResetDefaults(){
 void ChangeName(int index, String newName)
 {
   int temp = 0;
-  while (newName[temp] != 0 || temp == 15)
+  while (newName[temp] != 0 && temp != 15)
   {
     Name[index][temp++] = newName[temp];
+    // temp;
   }
   Name[index][temp] = 0;
 }
@@ -190,13 +191,18 @@ bool checkString(int index, String input)
   // change the delay time of a relay
   else if (input.substring(0, 3) == String("cd" + String(index)))
   {
-    Serial.println(input.substring(3));
+    Serial.println(input.substring(3, 6));
+    int newdelay = input.substring(3, 6).toInt();
+
+    if (newdelay > 0 || newdelay < 255)
+
     // I'm just going to make it so that the first 32 numbers are invalid for this
     // since characters 0, 10, and 13 were used to indicate end of input
-    if (input[3] >= 32)
     {
-      OnTime[index] = input[3] - 32;
+      OnTime[index] = newdelay;
       StoreDelay(index);
+      
+      Serial.println(OnTime[index], DEC);
     }
     Print(index);
   }
