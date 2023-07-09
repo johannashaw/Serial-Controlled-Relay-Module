@@ -21,7 +21,7 @@ namespace Device_Setup
         static SerialPort _serialPort = new SerialPort();
         Queue<string> ReceivedStrings = new Queue<string>();
         Thread th_CheckRec = null;
-        int editIndex = -1;
+        int editIndex = -1, workingIndex = -1;
 
         //BindingSource bs_Relays = null;
         List<Relay> ls_Relays = new List<Relay>(); 
@@ -268,8 +268,8 @@ namespace Device_Setup
             // Reset sends device control 2 char
             else if (sender as System.Windows.Forms.Button == butt_Reset)
             {
-                if (MessageBox.Show("Reset all the relay names and delays to the default?", 
-                    "Names be reset to 'R[x]' and delays will be reset to 3.5 sconds", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+                if (MessageBox.Show("Names will be reset to 'R[x]' and Delays will be reset to 3.5 seconds",
+                    "Reset all the relay names and delays to the default?", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
                     return;
                 SendChar(18);
             }
@@ -282,7 +282,7 @@ namespace Device_Setup
         private void SendChar(byte val)
         {
 
-            byte[] buff = new byte[] {val};
+            byte[] buff = new byte[] {val, (byte)'\n'};
 
             try
             {
@@ -363,7 +363,20 @@ namespace Device_Setup
 
         private void cb_NerdStuff_CheckedChanged(object sender, EventArgs e)
         {
+            // just save te starting width so that we don't get confused
+            Point thing = gb_NerdStuff.Location;
+
             gb_NerdStuff.Enabled = gb_NerdStuff.Visible = cb_NerdStuff.Checked;
+
+            Width += (gb_NerdStuff.Width + Padding.Right + gb_NerdStuff.Margin.Right) * (gb_NerdStuff.Enabled ?  1 : -1);
+
+
+
+            //gb_NerdStuff.Location = thing;
+            gb_NerdStuff.Width = Width - MinimumSize.Width;
+
+
+            SerialError(Width.ToString());
         }
 
         private void butt_edit_Click(object sender, EventArgs e)
@@ -373,26 +386,14 @@ namespace Device_Setup
                 SerialError("Select a row to edit");
                 return;
             }
-            //else
-            //    SerialError("");
 
             // get the selected relay
+            Relay relay = GetRelay();
 
-            Relay relay;
-            try
-            {
-                editIndex = (int)DGV_Relays.SelectedRows[0].Cells[0].Value - 1;
-
-                relay = ls_Relays[editIndex]; //(int)DGV_Relays.SelectedRows[0].Cells[0].Value;
-                                                //int editIndex = DGV_Relays.Rows.IndexOf(DGV_Relays.SelectedRows[0]);
-            }
-            catch(Exception ex)
-            {
-                SerialError($"Value error in edit Click event: " + ex.Message);
+            if (relay == null)
                 return;
-            }
+            editIndex = workingIndex;
 
-            //SerialError($"the editIndex is {editIndex}");
 
             gb_Edit.Enabled = true;
             gb_Edit.Text = $"Edit Relay {relay.Number + 1}";
@@ -401,6 +402,32 @@ namespace Device_Setup
             tb_Name.Text = relay.Name;
             trb_delay.Value = relay.Delay;
             Trb_delay_ValueChanged(sender, e);
+        }
+
+        private Relay GetRelay()
+        {
+            if (DGV_Relays.SelectedRows.Count == 0)
+            {
+                SerialError("Select a row to edit");
+                return null;
+            }
+
+            // get the selected relay
+
+            Relay relay;
+            try
+            {
+                workingIndex = (int)DGV_Relays.SelectedRows[0].Cells[0].Value - 1;
+
+                relay = ls_Relays[workingIndex]; //(int)DGV_Relays.SelectedRows[0].Cells[0].Value;
+                                              //int editIndex = DGV_Relays.Rows.IndexOf(DGV_Relays.SelectedRows[0]);
+            }
+            catch (Exception ex)
+            {
+                SerialError($"Value error in edit Click event: " + ex.Message);
+                return null;
+            }
+            return relay;
         }
 
 
@@ -488,7 +515,14 @@ namespace Device_Setup
         /// <param name="e"></param>
         private void butt_add_Click(object sender, EventArgs e)
         {
+            Relay rel = GetRelay();
+            if (rel == null)
+            {
+                return;
+            }
 
+            // send the relay name with a "+" at the end over the serial port
+            SendString(rel.Name + "+");
         }
 
         /// <summary>
@@ -498,7 +532,14 @@ namespace Device_Setup
         /// <param name="e"></param>
         private void butt_off_Click(object sender, EventArgs e)
         {
+            Relay rel = GetRelay();
+            if (rel == null)
+            {
+                return;
+            }
 
+            // send the relay name with a "_off" at the end over the serial port
+            SendString(rel.Name + "_off");
         }
 
         private void txb_delay_TextChanged(object sender, EventArgs e)

@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle26 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle29 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle30 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle27 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tb_Name = new System.Windows.Forms.TextBox();
             this.butt_Send = new System.Windows.Forms.Button();
             this.lb_inc = new System.Windows.Forms.Label();
@@ -83,12 +83,11 @@
             this.tb_Name.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.tb_Name.Size = new System.Drawing.Size(310, 26);
             this.tb_Name.TabIndex = 0;
-            this.tb_Name.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // butt_Send
             // 
             this.butt_Send.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.butt_Send.Location = new System.Drawing.Point(120, 28);
+            this.butt_Send.Location = new System.Drawing.Point(123, 28);
             this.butt_Send.Name = "butt_Send";
             this.butt_Send.Size = new System.Drawing.Size(95, 35);
             this.butt_Send.TabIndex = 1;
@@ -150,13 +149,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_test.Location = new System.Drawing.Point(14, 33);
             this.tb_test.Name = "tb_test";
-            this.tb_test.Size = new System.Drawing.Size(100, 26);
+            this.tb_test.Size = new System.Drawing.Size(103, 26);
             this.tb_test.TabIndex = 12;
             // 
             // butt_Refresh
             // 
             this.butt_Refresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.butt_Refresh.Location = new System.Drawing.Point(120, 632);
+            this.butt_Refresh.Location = new System.Drawing.Point(120, 596);
             this.butt_Refresh.Name = "butt_Refresh";
             this.butt_Refresh.Size = new System.Drawing.Size(95, 35);
             this.butt_Refresh.TabIndex = 13;
@@ -168,7 +167,7 @@
             // 
             this.butt_Reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.butt_Reset.Cursor = System.Windows.Forms.Cursors.SizeAll;
-            this.butt_Reset.Location = new System.Drawing.Point(14, 632);
+            this.butt_Reset.Location = new System.Drawing.Point(14, 596);
             this.butt_Reset.Name = "butt_Reset";
             this.butt_Reset.Size = new System.Drawing.Size(95, 35);
             this.butt_Reset.TabIndex = 14;
@@ -188,7 +187,8 @@
             // 
             // gb_NerdStuff
             // 
-            this.gb_NerdStuff.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.gb_NerdStuff.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gb_NerdStuff.Controls.Add(this.lb_out);
             this.gb_NerdStuff.Controls.Add(this.lb_in);
@@ -200,11 +200,13 @@
             this.gb_NerdStuff.Controls.Add(this.label2);
             this.gb_NerdStuff.Enabled = false;
             this.gb_NerdStuff.Location = new System.Drawing.Point(406, 12);
+            this.gb_NerdStuff.MinimumSize = new System.Drawing.Size(235, 0);
             this.gb_NerdStuff.Name = "gb_NerdStuff";
-            this.gb_NerdStuff.Size = new System.Drawing.Size(232, 673);
+            this.gb_NerdStuff.Size = new System.Drawing.Size(235, 637);
             this.gb_NerdStuff.TabIndex = 16;
             this.gb_NerdStuff.TabStop = false;
             this.gb_NerdStuff.Text = "Nerd Stuff";
+            this.gb_NerdStuff.Visible = false;
             // 
             // lb_out
             // 
@@ -214,7 +216,7 @@
             this.lb_out.ItemHeight = 20;
             this.lb_out.Location = new System.Drawing.Point(14, 354);
             this.lb_out.Name = "lb_out";
-            this.lb_out.Size = new System.Drawing.Size(194, 224);
+            this.lb_out.Size = new System.Drawing.Size(197, 224);
             this.lb_out.TabIndex = 16;
             // 
             // lb_in
@@ -225,14 +227,12 @@
             this.lb_in.ItemHeight = 20;
             this.lb_in.Location = new System.Drawing.Point(14, 99);
             this.lb_in.Name = "lb_in";
-            this.lb_in.Size = new System.Drawing.Size(194, 224);
+            this.lb_in.Size = new System.Drawing.Size(197, 224);
             this.lb_in.TabIndex = 15;
             // 
             // gb_Edit
             // 
-            this.gb_Edit.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gb_Edit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.gb_Edit.Controls.Add(this.butt_cancel);
             this.gb_Edit.Controls.Add(this.lb_EditError);
             this.gb_Edit.Controls.Add(this.label5);
@@ -245,7 +245,7 @@
             this.gb_Edit.Controls.Add(this.tb_Name);
             this.gb_Edit.Controls.Add(this.lb_inc);
             this.gb_Edit.Enabled = false;
-            this.gb_Edit.Location = new System.Drawing.Point(12, 465);
+            this.gb_Edit.Location = new System.Drawing.Point(12, 429);
             this.gb_Edit.Name = "gb_Edit";
             this.gb_Edit.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.gb_Edit.Size = new System.Drawing.Size(388, 220);
@@ -361,35 +361,34 @@
             this.DGV_Relays.AllowUserToDeleteRows = false;
             this.DGV_Relays.AllowUserToResizeColumns = false;
             this.DGV_Relays.AllowUserToResizeRows = false;
-            this.DGV_Relays.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DGV_Relays.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.DGV_Relays.BackgroundColor = System.Drawing.SystemColors.Control;
             this.DGV_Relays.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.DGV_Relays.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.DGV_Relays.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle26.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle26.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle26.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle26.SelectionBackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle26.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle26.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DGV_Relays.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle26;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DGV_Relays.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.DGV_Relays.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGV_Relays.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.col_Relay,
             this.col_name,
             this.col_Delay});
-            dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle28.BackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle28.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle28.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle28.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            dataGridViewCellStyle28.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
-            dataGridViewCellStyle28.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle28.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DGV_Relays.DefaultCellStyle = dataGridViewCellStyle28;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle8.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DGV_Relays.DefaultCellStyle = dataGridViewCellStyle8;
             this.DGV_Relays.EnableHeadersVisualStyles = false;
             this.DGV_Relays.GridColor = System.Drawing.SystemColors.Control;
             this.DGV_Relays.Location = new System.Drawing.Point(10, 39);
@@ -397,21 +396,21 @@
             this.DGV_Relays.Name = "DGV_Relays";
             this.DGV_Relays.ReadOnly = true;
             this.DGV_Relays.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle29.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle29.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle29.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle29.SelectionBackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle29.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle29.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGV_Relays.RowHeadersDefaultCellStyle = dataGridViewCellStyle29;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGV_Relays.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.DGV_Relays.RowHeadersVisible = false;
             this.DGV_Relays.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle30.BackColor = System.Drawing.SystemColors.Control;
-            this.DGV_Relays.RowsDefaultCellStyle = dataGridViewCellStyle30;
+            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Control;
+            this.DGV_Relays.RowsDefaultCellStyle = dataGridViewCellStyle10;
             this.DGV_Relays.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DGV_Relays.ShowCellErrors = false;
             this.DGV_Relays.ShowEditingIcon = false;
-            this.DGV_Relays.Size = new System.Drawing.Size(351, 245);
+            this.DGV_Relays.Size = new System.Drawing.Size(351, 209);
             this.DGV_Relays.TabIndex = 17;
             this.DGV_Relays.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DGV_Relays_CellMouseDoubleClick);
             // 
@@ -429,8 +428,8 @@
             // col_name
             // 
             this.col_name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.col_name.DefaultCellStyle = dataGridViewCellStyle27;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.col_name.DefaultCellStyle = dataGridViewCellStyle7;
             this.col_name.Frozen = true;
             this.col_name.HeaderText = "Name";
             this.col_name.MinimumWidth = 100;
@@ -450,8 +449,8 @@
             // 
             // gb_MainUI
             // 
-            this.gb_MainUI.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gb_MainUI.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.gb_MainUI.Controls.Add(this.butt_TestOff);
             this.gb_MainUI.Controls.Add(this.butt_edit);
             this.gb_MainUI.Controls.Add(this.DGV_Relays);
@@ -459,7 +458,7 @@
             this.gb_MainUI.Enabled = false;
             this.gb_MainUI.Location = new System.Drawing.Point(12, 113);
             this.gb_MainUI.Name = "gb_MainUI";
-            this.gb_MainUI.Size = new System.Drawing.Size(388, 343);
+            this.gb_MainUI.Size = new System.Drawing.Size(388, 307);
             this.gb_MainUI.TabIndex = 18;
             this.gb_MainUI.TabStop = false;
             this.gb_MainUI.Text = "List o\' Relays";
@@ -467,7 +466,7 @@
             // butt_TestOff
             // 
             this.butt_TestOff.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.butt_TestOff.Location = new System.Drawing.Point(265, 290);
+            this.butt_TestOff.Location = new System.Drawing.Point(265, 254);
             this.butt_TestOff.Name = "butt_TestOff";
             this.butt_TestOff.Size = new System.Drawing.Size(95, 35);
             this.butt_TestOff.TabIndex = 20;
@@ -478,7 +477,7 @@
             // butt_edit
             // 
             this.butt_edit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.butt_edit.Location = new System.Drawing.Point(10, 290);
+            this.butt_edit.Location = new System.Drawing.Point(10, 254);
             this.butt_edit.Name = "butt_edit";
             this.butt_edit.Size = new System.Drawing.Size(95, 35);
             this.butt_edit.TabIndex = 18;
@@ -489,7 +488,7 @@
             // butt_TestAdd
             // 
             this.butt_TestAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.butt_TestAdd.Location = new System.Drawing.Point(163, 290);
+            this.butt_TestAdd.Location = new System.Drawing.Point(163, 254);
             this.butt_TestAdd.Name = "butt_TestAdd";
             this.butt_TestAdd.Size = new System.Drawing.Size(95, 35);
             this.butt_TestAdd.TabIndex = 19;
@@ -499,7 +498,6 @@
             // 
             // cb_NerdStuff
             // 
-            this.cb_NerdStuff.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cb_NerdStuff.AutoSize = true;
             this.cb_NerdStuff.Location = new System.Drawing.Point(252, 14);
             this.cb_NerdStuff.Name = "cb_NerdStuff";
@@ -513,7 +511,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(650, 697);
+            this.ClientSize = new System.Drawing.Size(412, 661);
             this.Controls.Add(this.cb_NerdStuff);
             this.Controls.Add(this.gb_MainUI);
             this.Controls.Add(this.gb_Edit);
@@ -524,7 +522,8 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.HelpButton = true;
             this.Margin = new System.Windows.Forms.Padding(5);
-            this.MinimumSize = new System.Drawing.Size(666, 39);
+            this.MaximizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(428, 700);
             this.Name = "Form_ArduinoRelaySetup";
             this.Text = "Arduino Relay Setup";
             this.TransparencyKey = System.Drawing.Color.Lime;
