@@ -222,7 +222,7 @@ void serialEvent() {
   //Serial.println(String(char_in, DEC));
 
   // if char received is null, nl line feed, or carriage return
-  if (char_in == 0 || char_in == 10 || char_in == 13)
+  if (char_in == 0 || char_in == 10 || char_in == 13 || char_in == 46)  // the 46 is ascii for a period. 
   {
     // if we've already delt with received data, exit function
     if (lastend != index)
